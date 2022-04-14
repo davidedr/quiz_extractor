@@ -1,3 +1,6 @@
+import psycopg2
+from configparser import ConfigParser
+
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import urllib.request
@@ -5,6 +8,42 @@ import urllib.request
 import logging
 import platform
 import time
+
+def read_db_config(filename = 'database.ini', section = 'quiz_postgresql'):
+    parser = ConfigParser()
+    parser.read(filename)
+
+    db = {}
+    if parser.has_section(section):
+        params = parser.items(section)
+        for param in params:
+            db[param[0]] = param[1]
+    else:
+        e = Exception('Section {0} not found in the {1} file'.format(section, filename))
+        logging.info('{e}')
+        raise e
+
+    return db
+
+def connect_test(db_config):
+    conn = None
+    try:
+        logging.info('Connecting to the PostgreSQL database...')
+        conn = psycopg2.connect(**db_config)
+        cur = conn.cursor()
+        cur.execute('SELECT version()')
+        db_version = cur.fetchone()
+        logging.info('PostgreSQL database version: "{db_version}"!')
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as e:
+        logging.info('PostgreSQL database version: "{e}"!')
+    finally:
+        if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
+
+db_config = read_db_config(filename = 'database.ini', section = 'quiz_postgresql')
+connect_test(db_config)
 
 urls=[]
 urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/")
@@ -17,7 +56,12 @@ urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teo
 question_number=0
 
 for url in urls:
-  section_string = url.split("/")
+  
+  url_elems= url.split("/")
+  subject_string = url_elems[3]
+  topic_string = url_elems[4]
+  theme_string = url_elems[5]
+  
   if platform.system() == 'Windows':
       PHANTOMJS_PATH = './utility/chromedriver/chromedriver.exe'
   else:
@@ -35,7 +79,7 @@ for url in urls:
     soup = BeautifulSoup(browser.page_source, "html.parser")
 
     ''' soup.find_all("div", {"class": "watu-question"})[0].find_all("div", {"class": "question-content"})[0].text.split(".") '''
-    section_title = soup.find("div", {"class": "title-section"}).text.split("\n")[1]
+    section_string = soup.find("div", {"class": "title-section"}).text.split("\n")[1]
     question_elems = soup.find_all("div", {"class": "col-12 py-30 question"})
     for question_elem in question_elems:
       question_number = question_number + 1
@@ -64,6 +108,7 @@ for url in urls:
         question_image_width = question_image_elem.get("width")
         question_image_height = question_image_elem.get("height")
         print(question_image_src, question_image_width, question_image_height)
+
       
       answers_elems = question_elem.find_all("div", {"class": "col-12 answer"})
       for answer_elem in answers_elems:
