@@ -42,6 +42,9 @@ def connect_test(db_config):
           conn.close()
           logging.info('Database connection closed.')
 
+format = "%(asctime)s %(thread)d %(threadName)s: %(message)s"
+logging.basicConfig(filename="log/quiz_syite_reader.log", format=format, level=logging.NOTSET, datefmt="%Y-%m-%d %H:%M:%S")
+
 db_config = read_db_config(filename = 'database.ini', section = 'quiz_postgresql')
 connect_test(db_config)
 
@@ -59,8 +62,9 @@ for url in urls:
   
   url_elems= url.split("/")
   subject_string = url_elems[3]
-  topic_string = url_elems[4]
-  theme_string = url_elems[5]
+  version = "1"
+  theme_string = url_elems[4]
+  topic_string = url_elems[5]
   
   if platform.system() == 'Windows':
       PHANTOMJS_PATH = './utility/chromedriver/chromedriver.exe'
@@ -88,10 +92,6 @@ for url in urls:
       question_image_elem = question_elem.find("div", {"class": "col-12 pb-10"}).find("img")
       print(question_id, question_string)
 
-      conn = psycopg2.connect(**db_config)
-      cur = conn.cursor()
-      cur.execute('INSERT INTO question (')
-
       if question_image_elem:
         question_image_src = question_image_elem.get("src")
         '''
@@ -114,6 +114,27 @@ for url in urls:
         question_image_height = question_image_elem.get("height")
         print(question_image_src, question_image_width, question_image_height)
 
+        question_image = open(filename, 'rb').read()
+        question_image_binary = psycopg2.Binary(question_image)
+
+      try: 
+        conn = psycopg2.connect(**db_config)
+        cur = conn.cursor()
+        query = 'INSERT INTO questions (number, subject, version, theme, topic, section, question, image, image_filename, image_width, image_height) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+        values = (question_number, subject_string, version, theme_string, topic_string, section_string, question_string, None, None, None, None)
+        if question_image_elem:
+          values = (question_number, subject_string, version, theme_string, topic_string, section_string, question_string,
+          question_image_binary, filename, question_image_width, question_image_height)
+        cur.execute(query, values)
+        conn.commit()
+      except (Exception, psycopg2.DatabaseError) as e:
+          logging.error('Exception inserting question: "{e}"!')
+          logging.error(query)
+          logging.error(values)
+      finally:
+          if conn is not None:
+            conn.close()
+            logging.info('Database connection closed.')
       
       answers_elems = question_elem.find_all("div", {"class": "col-12 answer"})
       for answer_elem in answers_elems:
