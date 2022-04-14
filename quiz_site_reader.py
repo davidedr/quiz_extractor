@@ -20,7 +20,7 @@ def read_db_config(filename = 'database.ini', section = 'quiz_postgresql'):
             db[param[0]] = param[1]
     else:
         e = Exception('Section {0} not found in the {1} file'.format(section, filename))
-        logging.info('{e}')
+        logging.info(f'{e}')
         raise e
 
     return db
@@ -33,10 +33,10 @@ def connect_test(db_config):
         cur = conn.cursor()
         cur.execute('SELECT version()')
         db_version = cur.fetchone()
-        logging.info('PostgreSQL database version: "{db_version}"!')
+        logging.info(f'PostgreSQL database version: "{db_version}"!')
         cur.close()
     except (Exception, psycopg2.DatabaseError) as e:
-        logging.info('PostgreSQL database version: "{e}"!')
+        logging.info(f'PostgreSQL database version: "{e}"!')
     finally:
         if conn is not None:
           conn.close()
@@ -117,18 +117,20 @@ for url in urls:
         question_image = open(filename, 'rb').read()
         question_image_binary = psycopg2.Binary(question_image)
 
+      id_of_new_row = None
       try: 
         conn = psycopg2.connect(**db_config)
-        cur = conn.cursor()
-        query = 'INSERT INTO questions (number, subject, version, theme, topic, section, question, image, image_filename, image_width, image_height) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+        cursor = conn.cursor()
+        query = 'INSERT INTO questions (number, subject, version, theme, topic, section, question, image, image_filename, image_width, image_height) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id'
         values = (question_number, subject_string, version, theme_string, topic_string, section_string, question_string, None, None, None, None)
         if question_image_elem:
           values = (question_number, subject_string, version, theme_string, topic_string, section_string, question_string,
           question_image_binary, filename, question_image_width, question_image_height)
-        cur.execute(query, values)
+        cursor.execute(query, values)
+        id_of_new_row = cursor.fetchone()[0]
         conn.commit()
       except (Exception, psycopg2.DatabaseError) as e:
-          logging.error('Exception inserting question: "{e}"!')
+          logging.error(f'Exception inserting question: "{e}"!')
           logging.error(query)
           logging.error(values)
       finally:
@@ -137,10 +139,36 @@ for url in urls:
             logging.info('Database connection closed.')
       
       answers_elems = question_elem.find_all("div", {"class": "col-12 answer"})
+      answer_no = 0
       for answer_elem in answers_elems:
         answer_string = answer_elem.text.strip("\n")
         answer_correct = answer_elem.get("data-correct")
+        if answer_string.startswith("a)"):
+          answer_no = 1
+        elif answer_string.startswith("b)"):
+          answer_no = 2
+        elif answer_string.startswith("c)"):
+          answer_no = 3
+        else:
+          logging.error('Answer does not start with a), b) or c)!')
+
         print(answer_string, answer_correct)
+
+        try: 
+          conn = psycopg2.connect(**db_config)
+          cursor = conn.cursor()
+          query = 'INSERT INTO answers (question_id, answer_no, answer, correct) VALUES (%s, %s, %s, %s)'
+          values = (id_of_new_row, answer_no, answer_string, answer_correct == '1')
+          cursor.execute(query, values)
+          conn.commit()
+        except (Exception, psycopg2.DatabaseError) as e:
+            logging.error(f'Exception inserting question: "{e}"!')
+            logging.error(query)
+            logging.error(values)
+        finally:
+            if conn is not None:
+              conn.close()
+              logging.info('Database connection closed.')
 
       '''  
       question_number_string = question_string[:dot_index]
