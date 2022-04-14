@@ -42,52 +42,7 @@ def connect_test(db_config):
           conn.close()
           logging.info('Database connection closed.')
 
-format = "%(asctime)s %(thread)d %(threadName)s: %(message)s"
-logging.basicConfig(filename="log/quiz_syite_reader.log", format=format, level=logging.NOTSET, datefmt="%Y-%m-%d %H:%M:%S")
-
-db_config = read_db_config(filename = 'database.ini', section = 'quiz_postgresql')
-connect_test(db_config)
-
-urls=[]
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/1")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/2")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/3")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/4")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/5")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/6")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/7")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/8")
-
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/1")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/2")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/3")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/4")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/5")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/6")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/7")
-
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/1")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/2")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/3")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/4")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/5")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/6")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/7")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/8")
-
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/calcolo-autonomia/1")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/calcolo-autonomia/2")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/calcolo-autonomia/3")
-
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/dotazioni-di-bordo/1")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/dotazioni-di-bordo/2")
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/dotazioni-di-bordo/3")
-
-
-question_number=0
-
-for url in urls:
-  
+def process_url(url, question_number):
   url_elems= url.split("/")
   subject_string = url_elems[3]
   version = "1"
@@ -206,4 +161,65 @@ for url in urls:
 
     print("done")
   except Exception as e:
-    logging.exception('exception getting getting webpage: "{e}"!')
+    logging.exception(f'Exception getting getting webpage: "{e}"!')
+
+  return question_number
+
+format = "%(asctime)s %(thread)d %(threadName)s: %(message)s"
+logging.basicConfig(filename="log/quiz_syite_reader.log", format=format, level=logging.NOTSET, datefmt="%Y-%m-%d %H:%M:%S")
+
+db_config = read_db_config(filename = 'database.ini', section = 'quiz_postgresql')
+connect_test(db_config)
+
+urls=[]
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/2")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/3")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/4")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/5")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/6")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/7")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/8")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/2")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/3")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/4")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/5")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/6")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/7")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/2")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/3")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/4")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/5")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/6")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/7")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/calcolo-autonomia/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/calcolo-autonomia/2")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/calcolo-autonomia/3")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/dotazioni-di-bordo/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/dotazioni-di-bordo/2")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/dotazioni-di-bordo/3")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/visite-periodiche/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/visite-periodiche/2")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/sinistri-marittimi/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/sinistri-marittimi/2")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/navigazione-con-tempo-cattivo/")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/assistenza-e-soccorso/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/assistenza-e-soccorso/2")
+
+question_number=0
+
+'''process_url("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/8")
+'''
+for url in urls:
+  question_number = process_url(url, question_number)
+
