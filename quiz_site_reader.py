@@ -39,8 +39,8 @@ def connect_test(db_config):
         logging.info('PostgreSQL database version: "{e}"!')
     finally:
         if conn is not None:
-            conn.close()
-            logging.info('Database connection closed.')
+          conn.close()
+          logging.info('Database connection closed.')
 
 db_config = read_db_config(filename = 'database.ini', section = 'quiz_postgresql')
 connect_test(db_config)
@@ -87,6 +87,11 @@ for url in urls:
       question_id = question_elem.get("id")
       question_image_elem = question_elem.find("div", {"class": "col-12 pb-10"}).find("img")
       print(question_id, question_string)
+
+      conn = psycopg2.connect(**db_config)
+      cur = conn.cursor()
+      cur.execute('INSERT INTO question (')
+
       if question_image_elem:
         question_image_src = question_image_elem.get("src")
         '''
