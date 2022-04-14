@@ -49,13 +49,41 @@ db_config = read_db_config(filename = 'database.ini', section = 'quiz_postgresql
 connect_test(db_config)
 
 urls=[]
-urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/1")
 urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/2")
 urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/3")
 urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/4")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/5")
 urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/6")
 urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/7")
 urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/8")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/2")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/3")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/4")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/5")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/6")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/elica-e-timone/7")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/2")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/3")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/4")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/5")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/6")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/7")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/8")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/calcolo-autonomia/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/calcolo-autonomia/2")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/calcolo-autonomia/3")
+
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/dotazioni-di-bordo/1")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/dotazioni-di-bordo/2")
+urls.append("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/dotazioni-di-bordo/3")
+
+
 question_number=0
 
 for url in urls:
@@ -90,7 +118,7 @@ for url in urls:
       question_string = question_elem.find("div", {"class": "col-12 pb-10"}).text
       question_id = question_elem.get("id")
       question_image_elem = question_elem.find("div", {"class": "col-12 pb-10"}).find("img")
-      print(question_id, question_string)
+      logging.info(f'question_id: {question_id}, question_number: {question_number}, question_string: {question_string}')
 
       if question_image_elem:
         question_image_src = question_image_elem.get("src")
