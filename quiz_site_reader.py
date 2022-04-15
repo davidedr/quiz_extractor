@@ -161,7 +161,7 @@ def process_url(url, question_number):
   return question_number
 
 format = "%(asctime)s:%(thread)d:%(threadName)s:%(levelname)s:%(message)s"
-logging.basicConfig(filename = "log/quiz_syite_reader.log", format = format, level = logging.NOTSET, datefmt = "%Y-%m-%d %H:%M:%S")
+logging.basicConfig(filename = "log/quiz_site_reader.log", format = format, level = logging.NOTSET, datefmt = "%Y-%m-%d %H:%M:%S")
 
 db_config = read_db_config(filename = 'database.ini', section = 'quiz_postgresql')
 connect_test(db_config)
