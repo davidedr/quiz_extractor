@@ -33,7 +33,7 @@ def process_url(url, question_number):
 
     section_string = "missing"
     try:
-      section_string = soup.find("div", {"class": "title-section"}).text.split("\n")[1]
+      section_string = soup.find("div", {"class": "title-section"}).text.split("\n")[1].trim()
     except Exception as e:
       logging.error(f'Exception at: soup.find("div", {"class": "title-section"}).text.split("\n")[1]: {e}')
 
@@ -132,7 +132,9 @@ format = "%(asctime)s:%(thread)d:%(threadName)s:%(levelname)s:%(message)s"
 logging.basicConfig(filename = "log/quiz_site_reader.log", format = format, level = logging.NOTSET, datefmt = "%Y-%m-%d %H:%M:%S")
 
 db_config = read_db_config(filename = 'database.ini', section = 'quiz_postgresql')
-connect_test(db_config)
+db_test_ok = connect_test(db_config)
+if not db_test_ok:
+  end
 
 urls=[]
 urls.append({"base_url": "https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave", "pages": "8"})

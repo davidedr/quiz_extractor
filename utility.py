@@ -19,18 +19,21 @@ def read_db_config(filename = 'database.ini', section = 'quiz_postgresql'):
     return db
 
 def connect_test(db_config):
-    conn = None
+    connection = None
     try:
         logging.info('Connecting to the PostgreSQL database...')
-        conn = psycopg2.connect(**db_config)
-        cur = conn.cursor()
-        cur.execute('SELECT version()')
-        db_version = cur.fetchone()
+        connection = psycopg2.connect(**db_config)
+        cursor = connection.cursor()
+        cursor.execute('SELECT version()')
+        db_version = cursor.fetchone()
         logging.info(f'PostgreSQL database version: "{db_version}"!')
-        cur.close()
+        cursor.close()
     except (Exception, psycopg2.DatabaseError) as e:
-        logging.info(f'PostgreSQL database version: "{e}"!')
+        logging.error(f'Exceptinon testing database: "{e}"!')
+        return False
     finally:
-        if conn is not None:
-          conn.close()
+        if connection is not None:
+          connection.close()
           logging.debug('Database connection closed.')
+
+    return True
