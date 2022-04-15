@@ -1,3 +1,4 @@
 *.jpeg
 database.ini
 log/*
+images/*

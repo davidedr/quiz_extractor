@@ -9,6 +9,8 @@ import logging
 import platform
 import time
 
+IMAGES_SUBFOLDER = "images"
+
 def read_db_config(filename = 'database.ini', section = 'quiz_postgresql'):
     parser = ConfigParser()
     parser.read(filename)
@@ -58,15 +60,15 @@ def process_url(url, question_number):
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('headless')
     browser = webdriver.Chrome(executable_path=r'C:/temp/meteo_data_repo/utility/chromedriver/chromedriver.exe', options = chrome_options)
-    '''
-    browser.get("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/2/")
-    '''
-    browser.get(url)
-    '''time.sleep(15)'''
+    browser.get(url) 
     soup = BeautifulSoup(browser.page_source, "html.parser")
 
-    ''' soup.find_all("div", {"class": "watu-question"})[0].find_all("div", {"class": "question-content"})[0].text.split(".") '''
-    section_string = soup.find("div", {"class": "title-section"}).text.split("\n")[1]
+    section_string = "missing"
+    try:
+      section_string = soup.find("div", {"class": "title-section"}).text.split("\n")[1]
+    except Exception as e:
+      logging.error(f'Exception at: soup.find("div", {"class": "title-section"}).text.split("\n")[1]: {e}')
+
     question_elems = soup.find_all("div", {"class": "col-12 py-30 question"})
     for question_elem in question_elems:
       question_number = question_number + 1
@@ -86,16 +88,15 @@ def process_url(url, question_number):
         looks like:
         https://www.nauticando.net/img/quiz-patente-nautica/13.jpg
         '''
-        filename = str(question_number)+".jpeg"
+        filename = f'{IMAGES_SUBFOLDER}/{str(question_number)}.jpeg'
         opener = urllib.request.build_opener()
         opener.addheaders=[('User-Agent','Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1941.0 Safari/537.36')]
         urllib.request.install_opener(opener)
-        # calling urlretrieve function to get resource
         urllib.request.urlretrieve(question_image_url, filename)
 
         question_image_width = question_image_elem.get("width")
         question_image_height = question_image_elem.get("height")
-        print(question_image_src, question_image_width, question_image_height)
+        logging.info(f'question_image_src: {question_image_src}, question_image_width: {question_image_width}, question_image_height: {question_image_height}')
 
         question_image = open(filename, 'rb').read()
         question_image_binary = psycopg2.Binary(question_image)
@@ -135,7 +136,7 @@ def process_url(url, question_number):
         else:
           logging.error(f'Answer does not start with a), b) or c): "{answer_string}"!')
 
-        print(answer_string, answer_correct)
+        logging.info(f'answer_string: {answer_string}, answer_correct: {answer_correct}')
 
         try: 
           conn = psycopg2.connect(**db_config)
@@ -153,13 +154,13 @@ def process_url(url, question_number):
               conn.close()
               logging.debug('Database connection closed.')
 
-    print("Done")
+    logging.info(f'Done url: {url}.')
   except Exception as e:
     logging.exception(f'Exception getting getting webpage: "{e}"!')
 
   return question_number
 
-format = "%(asctime)s %(thread)d %(threadName)s: %(message)s"
+format = "%(asctime)s:%(thread)d:%(threadName)s:%(levelname)s:%(message)s"
 logging.basicConfig(filename = "log/quiz_syite_reader.log", format = format, level = logging.NOTSET, datefmt = "%Y-%m-%d %H:%M:%S")
 
 db_config = read_db_config(filename = 'database.ini', section = 'quiz_postgresql')
@@ -191,8 +192,8 @@ urls.append({"base_url": "https://www.nauticando.net/quiz-patente-nautica/entro-
 
 question_number=0
 
-'''process_url("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/motori-endotermici/8")
-'''
+process_url("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/5", question_number)
+
 for url_elem in urls:
   base_url = url_elem["base_url"]
   pages = int(url_elem["pages"])
