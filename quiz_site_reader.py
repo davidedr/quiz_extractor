@@ -192,7 +192,9 @@ urls.append({"base_url": "https://www.nauticando.net/quiz-patente-nautica/entro-
 
 question_number=0
 
+'''
 process_url("https://www.nauticando.net/quiz-patente-nautica/entro-12-miglia/teoria-della-nave/5", question_number)
+'''
 
 for url_elem in urls:
   base_url = url_elem["base_url"]
