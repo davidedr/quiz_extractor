@@ -8,8 +8,8 @@ quiz_items = [
     "image_width": 150, "image_height": 130},
   "answers": [
       {"answer_no": 1, "answer": "a) con la lettera A.", "correct": False},
-      { "answer_no": 1, "answer": "a) con la lettera B.", "correct": False},
-      { "answer_no": 1, "answer": "a) con la lettera C.", "correct": True}
+      { "answer_no": 1, "answer": "b) con la lettera B.", "correct": False},
+      { "answer_no": 1, "answer": "c) con la lettera C.", "correct": True}
   ]
   }
 ]
@@ -66,9 +66,22 @@ for quiz_item in quiz_items:
           <div class="column1">
               <p><b>{quiz_item["question_no"]}</b> {quiz_item["question"]}</p>
               <ul>
-                  <li>{quiz_item["answers"][0]["answer"]}</li>
-                  <li>{quiz_item["answers"][1]["answer"]}</li>
-                  <li>{quiz_item["answers"][2]["answer"]}</li>
+                <li style="list-style-type:none">
+                    <dl>
+                        <dt><input type="checkbox">  {quiz_item["answers"][0]["answer"]}</dt>
+                    </dl>
+                </li>
+                <li style="list-style-type:none">
+                    <dl>
+                        <dt><input type="checkbox">  {quiz_item["answers"][1]["answer"]}</dt>
+                    </dl>
+                </li>
+                <li style="list-style-type:none">
+                    <dl>
+                        <dt><input type="checkbox">  {quiz_item["answers"][2]["answer"]}</dt>
+                    </dl>
+                </li>
+
               </ul>
           </div>
           <div class="column2">
