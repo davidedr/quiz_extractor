@@ -3,3 +3,4 @@ database.ini
 log/*
 images/*
 quiz/*
+__pycache__/*

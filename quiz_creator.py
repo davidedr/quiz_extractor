@@ -16,8 +16,6 @@ argsparser.add_argument('Session', metavar = 'session', type = int, help = 'the 
 args = argsparser.parse_args()
 session = args.session
 """
-
-
 quiz_numbers = [
   {"topic": "teoria-della-nave", "how_many": 2},
   {"topic": "motori-endotermici", "how_many": 2},
@@ -155,4 +153,4 @@ for chosen_id in chosen_ids:
 
     quiz_items.append(quiz_item)
 
-create_quiz(quiz_items)
+create_quiz(quiz_items, session)

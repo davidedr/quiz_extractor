@@ -1,6 +1,7 @@
 from configparser import ConfigParser
 import psycopg2
 import logging
+from datetime import datetime
 
 def read_db_config(filename = 'database.ini', section = 'quiz_postgresql'):
   parser = ConfigParser()
@@ -40,7 +41,7 @@ def connect_test(db_config):
 
 QUIZ_SUBFOLDER = "quiz"
 
-def create_quiz(quiz_items):
+def create_quiz(quiz_items, session, datetimestamp = datetime.now(), with_answers = False):
   html_out_header = '''<!DOCTYPE html>
   <html>
 
@@ -109,7 +110,10 @@ def create_quiz(quiz_items):
 
   quiz_number = 1
   html_out = html_out + html_out_trailer
-  filename = f'{QUIZ_SUBFOLDER}/{str(quiz_number)}.html'
+  datetimestamp_string = datetimestamp.strftime("%Y%m%d%H%M%S") 
+  filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}.html'
   html_out_file = open(filename, 'w')
   html_out_file.write(html_out)
   html_out_file.close()
+
+  return datetimestamp
