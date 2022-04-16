@@ -169,4 +169,4 @@ for chosen_id in chosen_ids:
 
     quiz_items.append(quiz_item)
 
-create_quiz(quiz_items, session)
+datetimestamp = create_quiz(quiz_items, session)

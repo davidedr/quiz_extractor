@@ -42,7 +42,7 @@ def connect_test(db_config):
 
 QUIZ_SUBFOLDER = "quiz"
 
-def create_quiz(quiz_items, session, datetimestamp = datetime.now(), with_answers = False):
+def create_quiz_html(quiz_items, session, with_answers = True, datetimestamp = datetime.now()):
   html_out_header = '''<!DOCTYPE html>
   <html>
 
@@ -78,23 +78,30 @@ def create_quiz(quiz_items, session, datetimestamp = datetime.now(), with_answer
 
   html_out = html_out_header
   for quiz_item in quiz_items:
+    if with_answers:
+      answer_a_checked = ('', ', checked')[quiz_item["answers"][0]["correct"]]
+      answer_b_checked = ('', ', checked')[quiz_item["answers"][1]["correct"]]
+      answer_c_checked = ('', ', checked')[quiz_item["answers"][2]["correct"]]
+    else:
+      answer_a_checked = answer_b_checked = answer_c_checked = ''
+      
     html_out = html_out + f"""    <div class="row">
             <div class="column1">
                 <p><b>{quiz_item["question_no"]}</b> {quiz_item["question"]}</p>
                 <ul>
                   <li style="list-style-type:none">
                       <dl>
-                          <dt><input type="checkbox">  {quiz_item["answers"][0]["answer"]}</dt>
+                          <dt><input type="checkbox"{answer_a_checked}>  {quiz_item["answers"][0]["answer"]}</dt>
                       </dl>
                   </li>
                   <li style="list-style-type:none">
                       <dl>
-                          <dt><input type="checkbox">  {quiz_item["answers"][1]["answer"]}</dt>
+                          <dt><input type="checkbox"{answer_b_checked}>  {quiz_item["answers"][1]["answer"]}</dt>
                       </dl>
                   </li>
                   <li style="list-style-type:none">
                       <dl>
-                          <dt><input type="checkbox">  {quiz_item["answers"][2]["answer"]}</dt>
+                          <dt><input type="checkbox"{answer_c_checked}>  {quiz_item["answers"][2]["answer"]}</dt>
                       </dl>
                   </li>
 
@@ -114,8 +121,13 @@ def create_quiz(quiz_items, session, datetimestamp = datetime.now(), with_answer
 
   </html>"""
 
-  quiz_number = 1
   html_out = html_out + html_out_trailer
+  return html_out
+
+def create_quiz(quiz_items, session, with_answers = True, datetimestamp = datetime.now()):  
+
+  quiz_number = 1
+  html_out = create_quiz_html(quiz_items, session, with_answers = False)
   datetimestamp_string = datetimestamp.strftime("%Y%m%d%H%M%S") 
   filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}.html'
   html_out_file = open(filename, 'w')
@@ -123,6 +135,7 @@ def create_quiz(quiz_items, session, datetimestamp = datetime.now(), with_answer
   html_out_file.close()
 
   if (with_answers):
+    html_out = create_quiz_html(quiz_items, session, with_answers = True)
     filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}_WA.html'
     html_out_file = open(filename, 'w')
     html_out_file.write(html_out)
