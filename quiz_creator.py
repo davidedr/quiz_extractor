@@ -155,6 +155,7 @@ for chosen_id in chosen_ids:
     if question_image:
       quiz_item = {
         "question_no": question_number,
+        "question_topic": question_topic.replace('-', ' ').title(),
         "question": question_question,
         "image": {"image_binary": question_image, "image_width": question_image_width, "image_height": question_image_height},
         "answers": answers
@@ -162,6 +163,7 @@ for chosen_id in chosen_ids:
     else:
       quiz_item = {
         "question_no": question_number,
+        "question_topic": question_topic.replace('-', ' ').title(),
         "question": question_question,
         "image": None,
         "answers": answers

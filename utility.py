@@ -77,7 +77,10 @@ def create_quiz_html(quiz_items, session, with_answers = True, datetimestamp = d
   '''
 
   html_out = html_out_header
+  quiz_number_total = len(quiz_items)
+  quiz_number = 0
   for quiz_item in quiz_items:
+    quiz_number = quiz_number + 1
     if with_answers:
       answer_a_checked = ('', ', checked')[quiz_item["answers"][0]["correct"]]
       answer_b_checked = ('', ', checked')[quiz_item["answers"][1]["correct"]]
@@ -87,7 +90,9 @@ def create_quiz_html(quiz_items, session, with_answers = True, datetimestamp = d
       
     html_out = html_out + f"""    <div class="row">
             <div class="column1">
-                <p><b>{quiz_item["question_no"]}</b> {quiz_item["question"]}</p>
+                <p><i>{quiz_number}/{quiz_number_total}   {quiz_item["question_topic"]}</i>
+                </br>
+                <b>{quiz_item["question_no"]}</b> {quiz_item["question"]}</p>
                 <ul>
                   <li style="list-style-type:none">
                       <dl>
