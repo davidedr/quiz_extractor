@@ -42,10 +42,10 @@ def connect_test(db_config):
 
 QUIZ_SUBFOLDER = "quiz"
 
-def create_quiz_html(quiz_items, session, with_answers = True, datetimestamp = datetime.now()):
+def create_quiz_html(quiz_items, session, quiz_number, with_answers = True, datetimestamp = datetime.now()):
+  question_theme = quiz_items[0]["question_theme"]
   html_out_header = '''<!DOCTYPE html>
   <html>
-
   <head>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <style>
@@ -70,17 +70,15 @@ def create_quiz_html(quiz_items, session, with_answers = True, datetimestamp = d
       </style>
   </head>
 
-  <body>
-
-      <h2>Text and image side by side</h2>
-      <p>How to put text and image side by side with CSS Flexbox:</p>
-  '''
-
+  <body>'''
+  references = datetimestamp.strftime("%d/%m/%Y %H:%M:%S") + f" {session} {quiz_number}"
+  html_out_header = html_out_header + f'<p><h2>{question_theme}</h2>{references}</p>'
+  
   html_out = html_out_header
   quiz_number_total = len(quiz_items)
-  quiz_number = 0
+  quiz_index = 0
   for quiz_item in quiz_items:
-    quiz_number = quiz_number + 1
+    quiz_index = quiz_index + 1
     if with_answers:
       answer_a_checked = ('', ', checked')[quiz_item["answers"][0]["correct"]]
       answer_b_checked = ('', ', checked')[quiz_item["answers"][1]["correct"]]
@@ -88,9 +86,10 @@ def create_quiz_html(quiz_items, session, with_answers = True, datetimestamp = d
     else:
       answer_a_checked = answer_b_checked = answer_c_checked = ''
       
-    html_out = html_out + f"""    <div class="row">
+    html_out = html_out + f"""    
+          <div class="row">
             <div class="column1">
-                <p><i>{quiz_number}/{quiz_number_total}   {quiz_item["question_topic"]}</i>
+                <p><i>{quiz_index}/{quiz_number_total}   {quiz_item["question_topic"]}</i>
                 </br>
                 <b>{quiz_item["question_no"]}</b> {quiz_item["question"]}</p>
                 <ul>
@@ -129,10 +128,9 @@ def create_quiz_html(quiz_items, session, with_answers = True, datetimestamp = d
   html_out = html_out + html_out_trailer
   return html_out
 
-def create_quiz(quiz_items, session, with_answers = True, datetimestamp = datetime.now()):  
+def create_quiz(quiz_items, session, quiz_number = 1, with_answers = True, datetimestamp = datetime.now()):  
 
-  quiz_number = 1
-  html_out = create_quiz_html(quiz_items, session, with_answers = False)
+  html_out = create_quiz_html(quiz_items, session, quiz_number, with_answers = False)
   datetimestamp_string = datetimestamp.strftime("%Y%m%d%H%M%S") 
   filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}.html'
   html_out_file = open(filename, 'w')
@@ -140,7 +138,7 @@ def create_quiz(quiz_items, session, with_answers = True, datetimestamp = dateti
   html_out_file.close()
 
   if (with_answers):
-    html_out = create_quiz_html(quiz_items, session, with_answers = True)
+    html_out = create_quiz_html(quiz_items, session, quiz_number, with_answers = True)
     filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}_WA.html'
     html_out_file = open(filename, 'w')
     html_out_file.write(html_out)

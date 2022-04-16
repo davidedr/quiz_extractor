@@ -151,23 +151,17 @@ for chosen_id in chosen_ids:
       answer = {"answer_no": answer_no, "answer": answer_answer, "correct": answer_correct}
       answers.append(answer)
 
-    quiz_item = None
+    image_elem = None
     if question_image:
-      quiz_item = {
-        "question_no": question_number,
-        "question_topic": question_topic.replace('-', ' ').title(),
-        "question": question_question,
-        "image": {"image_binary": question_image, "image_width": question_image_width, "image_height": question_image_height},
-        "answers": answers
-      }
-    else:
-      quiz_item = {
-        "question_no": question_number,
-        "question_topic": question_topic.replace('-', ' ').title(),
-        "question": question_question,
-        "image": None,
-        "answers": answers
-      }
+      image_elem = {"image_binary": question_image, "image_width": question_image_width, "image_height": question_image_height}
+    quiz_item = {
+      "question_no": question_number,
+      "question_theme": question_theme.replace('-', ' ').title(),
+      "question_topic": question_topic.replace('-', ' ').title(),
+      "question": question_question,
+      "image": image_elem,
+      "answers": answers
+    }
 
     quiz_items.append(quiz_item)
 
