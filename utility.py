@@ -99,8 +99,10 @@ def create_quiz(quiz_items, session, datetimestamp = datetime.now(), with_answer
 
                 </ul>
             </div>
-            <div class="column2">
-                <img src="images/13.jpeg" alt="" width="150" height="130">
+            <div class="column2">"""
+    if quiz_item["image"]:
+      html_out = html_out +'<img src="images/13.jpeg" alt="" width="150" height="130">'
+    html_out = html_out +"""
             </div>
         </div>"""
 
@@ -115,5 +117,12 @@ def create_quiz(quiz_items, session, datetimestamp = datetime.now(), with_answer
   html_out_file = open(filename, 'w')
   html_out_file.write(html_out)
   html_out_file.close()
+
+  if (with_answers):
+    filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}_WA.html'
+    html_out_file = open(filename, 'w')
+    html_out_file.write(html_out)
+    html_out_file.close()
+
 
   return datetimestamp

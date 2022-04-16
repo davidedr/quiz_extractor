@@ -144,10 +144,14 @@ for chosen_id in chosen_ids:
       answer = {"answer_no": answer_no, "answer": answer_answer, "correct": answer_correct}
       answers.append(answer)
 
+    if question_image:
+      image_elem = {"image_binary": question_image, "image_width": question_image_width, "image_height": question_image_height}
+    else:
+      image_elem = None
     quiz_item = {
       "question_no": question_number,
       "question": question_question,
-      "image": {"image_binary": question_image, "image_width": question_image_width, "image_height": question_image_height},
+      "image": image_elem,
       "answers": answers
     }
 
