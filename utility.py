@@ -65,7 +65,7 @@ def create_quiz_html(quiz_items, session, quiz_number, with_answers = True, date
           
           .column2 {
               flex: 20%;
-              padding: 5px;
+              padding-top: 30px;
           }
       </style>
   </head>
