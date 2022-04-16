@@ -2,6 +2,7 @@ from configparser import ConfigParser
 import psycopg2
 import logging
 from datetime import datetime
+import base64
 
 def read_db_config(filename = 'database.ini', section = 'quiz_postgresql'):
   parser = ConfigParser()
@@ -101,7 +102,10 @@ def create_quiz(quiz_items, session, datetimestamp = datetime.now(), with_answer
             </div>
             <div class="column2">"""
     if quiz_item["image"]:
-      html_out = html_out +'<img src="images/13.jpeg" alt="" width="150" height="130">'
+      #html_out = html_out +'<img src="images/13.jpeg" alt="" width="150" height="130">'
+      image_string_base64 = base64.b64encode(quiz_item["image"]["image_binary"])
+      image_string_base64_stripped = str(image_string_base64, 'utf-8')
+      html_out = html_out +f'<img src="data:image/png;base64,{image_string_base64_stripped}" width="150" height="130">'
     html_out = html_out +"""
             </div>
         </div>"""
@@ -123,6 +127,5 @@ def create_quiz(quiz_items, session, datetimestamp = datetime.now(), with_answer
     html_out_file = open(filename, 'w')
     html_out_file.write(html_out)
     html_out_file.close()
-
 
   return datetimestamp

@@ -57,6 +57,7 @@ for quiz_number in quiz_numbers:
       for row in rows:
         ids.append(row[0])
     cursor.close()
+    connection.commit()
   except (Exception, psycopg2.DatabaseError) as e:
       logging.error(f'Exception "{e}"!')
       logging.error(f'query: "{query}"!')
@@ -100,7 +101,9 @@ for chosen_id in chosen_ids:
       cursor.execute(query, values)
       row_question = cursor.fetchone()
       cursor.close()
+      connection.commit()
 
+      connection = psycopg2.connect(**db_config)
       cursor = connection.cursor()
       query = "SELECT * FROM answers WHERE question_id=%s ORDER BY answer_no"
       values = (chosen,)
@@ -109,6 +112,7 @@ for chosen_id in chosen_ids:
       cursor.execute(query, values)
       rows_answers = cursor.fetchmany(3)
       cursor.close()
+      connection.commit()
 
     except (Exception, psycopg2.DatabaseError) as e:
         logging.error(f'Exception "{e}"!')
@@ -129,7 +133,10 @@ for chosen_id in chosen_ids:
     question_topic = row_question[5]
     question_section = row_question[6]
     question_question = row_question[7]
-    question_image = row_question[8]
+    if row_question[8]:
+      question_image = bytes(row_question[8])
+    else: 
+      question_image = None
     question_image_filename = row_question[9]
     question_image_width = row_question[10]
     question_image_height = row_question[11]
@@ -144,16 +151,21 @@ for chosen_id in chosen_ids:
       answer = {"answer_no": answer_no, "answer": answer_answer, "correct": answer_correct}
       answers.append(answer)
 
+    quiz_item = None
     if question_image:
-      image_elem = {"image_binary": question_image, "image_width": question_image_width, "image_height": question_image_height}
+      quiz_item = {
+        "question_no": question_number,
+        "question": question_question,
+        "image": {"image_binary": question_image, "image_width": question_image_width, "image_height": question_image_height},
+        "answers": answers
+      }
     else:
-      image_elem = None
-    quiz_item = {
-      "question_no": question_number,
-      "question": question_question,
-      "image": image_elem,
-      "answers": answers
-    }
+      quiz_item = {
+        "question_no": question_number,
+        "question": question_question,
+        "image": None,
+        "answers": answers
+      }
 
     quiz_items.append(quiz_item)
 
