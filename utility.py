@@ -132,25 +132,26 @@ def create_quiz(quiz_items, session, quiz_number = 1, with_answers = True, datet
 
   html_out = create_quiz_html(quiz_items, session, quiz_number, with_answers = False)
   datetimestamp_string = datetimestamp.strftime("%Y%m%d%H%M%S") 
-  filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}.html'
+  quiz_filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}.html'
 
   try: 
-    html_out_file = open(filename, 'w')
+    html_out_file = open(quiz_filename, 'w')
     html_out_file.write(html_out)
     html_out_file.close()
   except (Exception) as e:
     logging.error(e)
     return None
 
+  quiz_wa_filename = None
   if (with_answers):
     html_out = create_quiz_html(quiz_items, session, quiz_number, with_answers = True)
-    filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}_WA.html'
+    quiz_wa_filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}_WA.html'
     try:
-      html_out_file = open(filename, 'w')
+      html_out_file = open(quiz_wa_filename, 'w')
       html_out_file.write(html_out)
       html_out_file.close()
     except (Exception) as e:
       logging.error(e)
-    return None
+      return None
 
-  return datetimestamp
+  return (datetimestamp, quiz_filename, quiz_wa_filename)
