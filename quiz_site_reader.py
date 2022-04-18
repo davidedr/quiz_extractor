@@ -71,8 +71,8 @@ def process_url(url, question_number):
 
       id_of_new_row = None
       try: 
-        conn = psycopg2.connect(**db_config)
-        cursor = conn.cursor()
+        connection = psycopg2.connect(**db_config)
+        cursor = connection.cursor()
         query = 'INSERT INTO questions (number, subject, version, theme, topic, section, question, image, image_filename, image_width, image_height) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id'
         values = (question_number, subject_string, version, theme_string, topic_string, section_string, question_string, None, None, None, None)
         if question_image_elem:
@@ -80,14 +80,15 @@ def process_url(url, question_number):
           question_image_binary, filename, question_image_width, question_image_height)
         cursor.execute(query, values)
         id_of_new_row = cursor.fetchone()[0]
-        conn.commit()
+        cursor.close()
+        connection.commit()
       except (Exception, psycopg2.DatabaseError) as e:
           logging.error(f'Exception inserting question: "{e}"!')
           logging.error(query)
           logging.error(values)
       finally:
-          if conn is not None:
-            conn.close()
+          if connection is not None:
+            connection.close()
             logging.debug('Database connection closed.')
       
       answers_elems = question_elem.find_all("div", {"class": "col-12 answer"})
@@ -107,19 +108,20 @@ def process_url(url, question_number):
         logging.info(f'answer_string: {answer_string}, answer_correct: {answer_correct}')
 
         try: 
-          conn = psycopg2.connect(**db_config)
-          cursor = conn.cursor()
+          connection = psycopg2.connect(**db_config)
+          cursor = connection.cursor()
           query = 'INSERT INTO answers (question_id, answer_no, answer, correct) VALUES (%s, %s, %s, %s)'
           values = (id_of_new_row, answer_no, answer_string, answer_correct == '1')
           cursor.execute(query, values)
-          conn.commit()
+          cursor.close()
+          connection.commit()
         except (Exception, psycopg2.DatabaseError) as e:
             logging.error(f'Exception inserting question: "{e}"!')
             logging.error(query)
             logging.error(values)
         finally:
-            if conn is not None:
-              conn.close()
+            if connection is not None:
+              connection.close()
               logging.debug('Database connection closed.')
 
     logging.info(f'Done url: {url}.')
