@@ -41,13 +41,22 @@ for quiz_number in quiz_numbers:
     connection = psycopg2.connect(**db_config)
     cursor = connection.cursor()
     query = """
-      SELECT questions.id FROM questions
-      WHERE topic=%s AND id NOT IN (
-          SELECT questions.id FROM  questions, used_questions
-          WHERE questions.id = used_questions.question_id AND used_questions.session=%s AND used_questions.used=NULL
-        )
+      SELECT questions.id FROM questions	
+        WHERE topic = %s AND id NOT IN (
+          SELECT questions.id FROM questions, used_questions
+          WHERE questions.theme = %s AND questions.topic = %s
+          AND questions.id = used_questions.question_id AND used_questions.session = %s AND used_questions.quiz = NULL
+        );
     """
-    values = (topic, session)
+    old_query = """
+          SELECT questions.id FROM questions
+          WHERE theme = %s AND topic = %s AND id NOT IN (
+              SELECT questions.id FROM  questions, used_questions
+              WHERE questions.theme = %s questions.topic = %s
+                    AND questions.id = used_questions.question_id AND used_questions.session = %s AND used_questions.quiz = NULL
+            )
+    """
+    values = (topic, theme, topic, session)
     cursor.execute(query, values)
     ids=[]
     while True:
