@@ -175,3 +175,9 @@ for chosen_id in chosen_ids:
     quiz_items.append(quiz_item)
 
 datetimestamp = create_quiz(quiz_items, session)
+
+if datetimestamp:
+  
+else:
+  logging.error("Exception occurred, quiz creation aborted!")
+

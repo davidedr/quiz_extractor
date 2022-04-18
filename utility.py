@@ -133,15 +133,24 @@ def create_quiz(quiz_items, session, quiz_number = 1, with_answers = True, datet
   html_out = create_quiz_html(quiz_items, session, quiz_number, with_answers = False)
   datetimestamp_string = datetimestamp.strftime("%Y%m%d%H%M%S") 
   filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}.html'
-  html_out_file = open(filename, 'w')
-  html_out_file.write(html_out)
-  html_out_file.close()
+
+  try: 
+    html_out_file = open(filename, 'w')
+    html_out_file.write(html_out)
+    html_out_file.close()
+  except (Exception) as e:
+    logging.error(e)
+    return None
 
   if (with_answers):
     html_out = create_quiz_html(quiz_items, session, quiz_number, with_answers = True)
     filename = f'{QUIZ_SUBFOLDER}/quiz_{str(session)}_{str(quiz_number)}_{datetimestamp_string}_WA.html'
-    html_out_file = open(filename, 'w')
-    html_out_file.write(html_out)
-    html_out_file.close()
+    try:
+      html_out_file = open(filename, 'w')
+      html_out_file.write(html_out)
+      html_out_file.close()
+    except (Exception) as e:
+      logging.error(e)
+    return None
 
   return datetimestamp
