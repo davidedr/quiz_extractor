@@ -9,13 +9,13 @@ from utility import read_db_config, connect_test, create_quiz
 format = "%(asctime)s:%(thread)d:%(threadName)s:%(levelname)s:%(message)s"
 logging.basicConfig(filename = "log/quiz_creator.log", format = format, level = logging.NOTSET, datefmt = "%Y-%m-%d %H:%M:%S")
 
-session = 1
-"""
 argsparser = argparse.ArgumentParser(prog = "quiz_creator", usage = '%(prog)s [options] session', description = 'Generate a quiz for the given session')
+argsparser.add_argument('Theme', metavar = 'theme', type = str, help = 'the theme to be used')
 argsparser.add_argument('Session', metavar = 'session', type = int, help = 'the session to be used')
 args = argsparser.parse_args()
-session = args.session
-"""
+theme = args.Theme
+session = args.Session
+
 quiz_numbers = [
   {"topic": "teoria-della-nave", "how_many": 2},
   {"topic": "motori-endotermici", "how_many": 2},
