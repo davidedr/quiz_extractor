@@ -8,5 +8,7 @@ CREATE TABLE used_questions (
     session INT NOT NULL,
     quiz_number INT NOT NULL,
     quiz_timestamp TIMESTAMP WITH TIME ZONE,
+    quiz_filename VARCHAR,
+    quiz_wa_filename VARCHAR,
     question_id INT NOT NULL REFERENCES questions(id)    
 )
